@@ -1,0 +1,52 @@
+name: Deploy to GitHub Pages
+
+on:
+  release:
+    types: [published]
+
+jobs:
+    deploy:
+        permissions:
+            pages: write
+            id-token: write
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: jetli/trunk-action@v0.5.0 # Setup trunk without having to build it
+
+            - name: Install nightly Rust
+              run: |
+                rustup toolchain install nightly
+                rustup default nightly
+            
+            - name: Install wasm32 Target
+              run: rustup target add wasm32-unknown-unknown
+            
+            - name: Cache Cargo Registry
+              uses: actions/cache@v4
+              with:
+                path: ~/.cargo/registry
+                key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+                restore-keys: |
+                  ${{ runner.os }}-cargo-registry-
+      
+            - name: Cache Cargo Build
+              uses: actions/cache@v4
+              with:
+                path: target
+                key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+                restore-keys: |
+                  ${{ runner.os }}-cargo-build-
+
+            - name: Build with Trunk
+              run: trunk build --release
+            
+            - name: Upload Build Artifacts
+              uses: actions/upload-pages-artifact@v3
+              with:
+                path: dist
+            
+            - name: Deploy to GitHub Pages
+              uses: actions/deploy-pages@v4
