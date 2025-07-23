@@ -1,15 +1,17 @@
+use anyhow::Context;
 use leptos::prelude::*;
 use thaw::*;
 
-use crate::components::LinkButton;
+use crate::{components::LocalData, utils};
 
-async fn fetch_monkeys() -> String {
+struct Foo;
+
+async fn fetch_local(_: &str) -> String {
     // maybe this didn't need to be async
     let url = format!("{}/data/test.json", window().location().origin().unwrap());
     log::info!("{}", url);
     let body = reqwest::get(url)
-        .await
-        .unwrap()
+        .await.unwrap()
         .text()
         .await
         .unwrap();
@@ -18,7 +20,7 @@ async fn fetch_monkeys() -> String {
 
 #[component]
 pub fn Music() -> impl IntoView {
-    let async_data = LocalResource::new(|| fetch_monkeys());
+    let async_data = LocalResource::new(|| fetch_local("/data/test.json"));
     view! {
         <Suspense
             // the fallback will show whenever a resource

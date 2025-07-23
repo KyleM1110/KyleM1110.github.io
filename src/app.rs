@@ -19,40 +19,33 @@ fn NavButton(#[prop(into, optional)] href: &'static str, children: Children) -> 
 
 #[component]
 fn NavBar(theme: RwSignal<Theme>) -> impl IntoView {
-    let style = Memo::new(move |_| {
-        format!(
-            "height: 100%; padding-left: 13px; background-color: {};",
-            theme.get().color.color_neutral_background_3
-        )
+    let icon = Memo::new(move |_| {
+        if theme.get().name == Theme::light().name {
+            icondata_ai::AiMoonOutlined
+        } else {
+            icondata_ai::AiSunOutlined
+        }
+    });
+    let text = Memo::new(move |_| {
+        if theme.get().name == Theme::light().name {
+            "Dark"
+        } else {
+            "Light"
+        }
     });
     view! {
-        <Flex class="nav-bar" style align=FlexAlign::Center justify=FlexJustify::SpaceBetween>
+        <Flex class="nav-bar" style="height: 100%; padding-left: 13px;" style:background-color=move || theme.get().color.color_neutral_background_3 align=FlexAlign::Center justify=FlexJustify::SpaceBetween>
             <Text style="font-size: 1.5rem;" tag=TextTag::H1>
                 <b>"Kyle Manuel"</b>
             </Text>
             <Flex gap=FlexGap::Small>
-                <Show
-                    when=move || theme.get().name == Theme::dark().name
-                    fallback=move || {
-                        view! {
-                            <Button
-                                class="enable-dark-theme-button"
-                                icon=icondata_ai::AiMoonOutlined
-                                on_click=move |_| theme.set(Theme::dark())
-                            >
-                                "Dark"
-                            </Button>
-                        }
-                    }
+                <Button
+                    class="toggle-theme-button"
+                    icon
+                    on_click=move |_| theme.set(if theme.get().name == Theme::light().name { Theme::dark() } else { Theme::light() })
                 >
-                    <Button
-                        class="enable-light-theme-button"
-                        icon=icondata_ai::AiSunOutlined
-                        on_click=move |_| theme.set(Theme::light())
-                    >
-                        "Light"
-                    </Button>
-                </Show>
+                    {text}
+                </Button>
                 <NavButton href="/home">"Home"</NavButton>
                 <NavButton href="/music">"Music"</NavButton>
                 <NavButton href="/contact">"Contact"</NavButton>
@@ -64,16 +57,11 @@ fn NavBar(theme: RwSignal<Theme>) -> impl IntoView {
 
 #[component]
 fn Footer(#[prop(into)] theme: Signal<Theme>) -> impl IntoView {
-    let style = Memo::new(move |_| {
-        format!(
-            "height: 100%; background-color: {};",
-            theme.get().color.color_neutral_background_3
-        )
-    });
     view! {
         <Divider />
         <Flex
-            style
+            style:background-color=move || theme.get().color.color_neutral_background_3
+            style="height: 100%;"
             class="footer"
             vertical=true
             align=FlexAlign::Center
