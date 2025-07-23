@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.98"
+chrono = { version = "0.4.41", features = ["serde"] }
 console_error_panic_hook = "0.1.7"
 console_log = "1.0.0"
 icondata_ai = "0.1.0"
@@ -13,7 +14,8 @@ leptos = { version = "0.7.8", features = ["csr", "nightly"] }
 leptos-use = "0.15.10"
 leptos_router = { version = "0.7.8", features = ["nightly"] }
 log = "0.4.27"
-reqwest = { version = "0.12.22", features = ["json"] }
+reqwest = "0.12.22"
 serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.141"
 thaw = { version = "0.4.7", features = ["csr", "nightly"] }
 thiserror = "2.0.12"

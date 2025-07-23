@@ -1,9 +1,9 @@
-use anyhow::{Context, Result};
-use leptos::prelude::window;
+use anyhow::{anyhow, Context};
+use leptos::{prelude::window, server::LocalResource};
 use reqwest::Response;
 use serde::de::DeserializeOwned;
 
-async fn get_local_response(url: &str) -> Result<Response> {
+async fn get_local_response(url: &str) -> anyhow::Result<Response> {
     let url = url.trim().trim_start_matches('/');
     let url = format!("{}/{url}", window().location().origin().unwrap());
     log::debug!("Fetching local resource: '{url}'");
@@ -11,10 +11,10 @@ async fn get_local_response(url: &str) -> Result<Response> {
         .await
         .context(format!("Failed to fetch local resource: '{}'", &url))?
         .error_for_status()
-        .context("Response was not successful")?;
+        .context("Request to retrieve local resource did not have a successful response")?;
     Ok(response)
 }
-pub async fn fetch_local_raw(url: &str) -> Result<String> {
+pub async fn fetch_local_raw(url: &str) -> anyhow::Result<String> {
     let response = get_local_response(url).await?;
     let body = response
         .text()
@@ -23,14 +23,18 @@ pub async fn fetch_local_raw(url: &str) -> Result<String> {
     Ok(body)
 }
 
-pub async fn fetch_local<T>(url: &str) -> Result<T>
+pub fn fetch_local_resource<T>(url: &'static str) -> LocalResource<Result<T, String>>
 where
-    T: DeserializeOwned,
+    T: DeserializeOwned + 'static,
 {
-    let response = get_local_response(url).await?;
-    let body = response
-        .json::<T>()
-        .await
-        .context("Failed to deserialize JSON response")?;
-    Ok(body)
+    LocalResource::new(move || async move {
+        let data = fetch_local_raw(url)
+            .await
+            .map(|raw_data| {
+                serde_json::from_str::<T>(&raw_data).context(format!("Failed to serialize '{url}'"))
+            })
+            .flatten()
+            .map_err(|e| e.to_string());
+        data
+    })
 }

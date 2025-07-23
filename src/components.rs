@@ -1,5 +1,4 @@
 mod backdrop;
-mod local_data;
-mod nav_button;
+mod link_button;
 
-pub use {nav_button::LinkButton, backdrop::Backdrop, local_data::LocalData};
+pub use {link_button::LinkButton, backdrop::Backdrop};
