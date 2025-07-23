@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/KyleM1110/KyleM1110.github.io/compare/v0.1.0...v0.2.0) (2025-07-23)
+
+
+### Miscellaneous Chores
+
+* release 0.2.0 ([599c6a8](https://github.com/KyleM1110/KyleM1110.github.io/commit/599c6a82e6d0c70407e6a2ed8df835da23f55134))
+
 ## 0.1.0 (2025-07-22)
 
 
