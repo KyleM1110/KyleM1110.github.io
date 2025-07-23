@@ -38,7 +38,11 @@ pub fn Music() -> impl IntoView {
                             "/data/manifest.json".to_string(),
                         )),
                 );
-                // view! { <ErrorBoundary fallback=|errors| view! {}>{manifest}</ErrorBoundary> }
+                view! {
+                    <ErrorBoundary fallback=|errors| {
+                        view! { "An error occurred" }
+                    }>{manifest}</ErrorBoundary>
+                }
             })}
         </Transition>
     }
@@ -80,9 +84,9 @@ fn NumericInput() -> impl IntoView {
                 <p>
                     // because `value` is `Result<i32, _>`,
                     // it will render the `i32` if it is `Ok`,
-                    {a} // and render nothing and trigger the error boundary
-                    "You entered " // if it is `Err`. It's a signal, so this will dynamically
-                    // update when `value` changes
+                    // and render nothing and trigger the error boundary
+                    {a} // if it is `Err`. It's a signal, so this will dynamically
+                    "You entered " // update when `value` changes
                     <strong>{value}</strong>
                 </p>
             </ErrorBoundary>
