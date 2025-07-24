@@ -29,7 +29,8 @@ fn MusicEntryCard(entry: MusicEntry) -> impl IntoView {
 pub fn Music() -> impl IntoView {
     // TODO: potentially make this into a OnceResource
     let manifest_resource = utils::fetch_local_resource::<DataManifest>(MANIFEST_URL.to_string());
-    let (entry_resources, _) =
+    // TODO: this is very hacky, but it seems like this is the only way to store a vector of resources outside the view
+    let (entry_resources, set_entry_resources) =
         signal(Vec::<LocalResource<Result<MusicEntry, LocalResourceError>>>::new());
     view! {
         <Transition>
@@ -38,8 +39,11 @@ pub fn Music() -> impl IntoView {
                 if let Ok(ref m) = manifest {
                     let slugs = m.slugs.clone();
                     for slug in slugs {
-                        entry_resources()
-                            .push(utils::fetch_local_resource::<MusicEntry>(slug.to_string()))
+                        set_entry_resources({
+                            let mut v = entry_resources();
+                            v.push(utils::fetch_local_resource::<MusicEntry>(slug.to_string()));
+                            v
+                        });
                     }
                 }
                 log::debug!(
@@ -55,11 +59,7 @@ pub fn Music() -> impl IntoView {
                     .map(|result| {
                         result
                             .map(|entry| {
-                                view! {
-                                    <GridItem>
-                                        <MusicEntryCard entry />
-                                    </GridItem>
-                                }
+                                view! { <MusicEntryCard entry /> }
                             })
                     })
                     .collect_view();
