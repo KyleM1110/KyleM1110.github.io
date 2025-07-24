@@ -64,12 +64,12 @@ pub fn Music() -> impl IntoView {
                     }>
                         {manifest.map(|_| ())}
                         <Flex
-                            style="height: 100%;"
+                            style="height: 100%; z-index: 1;"
                             class="music-entry-cards"
                             align=FlexAlign::Center
                             justify=FlexJustify::Center
                         >
-                            <Grid class="music-entry-cards-grid" cols=3>
+                            <Grid attr:style="z-index: 1;" class="music-entry-cards-grid" cols=3>
                                 {entries
                                     .into_iter()
                                     .map(|result| {
