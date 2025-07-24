@@ -2,15 +2,15 @@ use leptos::prelude::*;
 use thaw::*;
 
 #[component]
-pub fn NotFound() -> impl IntoView {
+pub fn ServerError() -> impl IntoView {
     view! {
         <Flex
-            class="page-not-found-message"
+            class="server-error-message"
             style="height: 100%;"
             align=FlexAlign::Center
             justify=FlexJustify::Center
         >
-            <Text style="font-size: 8rem;">404 - Not Found</Text>
+            <Text style="font-size: 8rem;">500 - Internal Server Error</Text>
         </Flex>
     }
 }
