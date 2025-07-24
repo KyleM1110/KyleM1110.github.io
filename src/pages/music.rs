@@ -32,6 +32,7 @@ pub fn Music() -> impl IntoView {
     // TODO: this is very hacky, but it seems like this is the only way to store a vector of resources outside the view
     let (entry_resources, set_entry_resources) =
         signal(Vec::<LocalResource<Result<MusicEntry, LocalResourceError>>>::new());
+    // TODO: need to add pages. This isn't immediately until more music is published
     view! {
         <Transition>
             {move || Suspend::new(async move {
@@ -54,15 +55,6 @@ pub fn Music() -> impl IntoView {
                     entries.push(resource.await);
                 }
                 log::info!("Loaded {} music entries", entries.len());
-                let grid_items = entries
-                    .into_iter()
-                    .map(|result| {
-                        result
-                            .map(|entry| {
-                                view! { <MusicEntryCard entry /> }
-                            })
-                    })
-                    .collect_view();
                 view! {
                     <ErrorBoundary fallback=|errors| {
                         for (_, error) in errors() {
@@ -70,9 +62,29 @@ pub fn Music() -> impl IntoView {
                         }
                         view! { <ServerError /> }
                     }>
-                        {manifest.map(|_| ())} <Grid class="music-entry-cards" cols=3>
-                            {grid_items}
-                        </Grid>
+                        {manifest.map(|_| ())}
+                        <Flex
+                            style="height: 100%;"
+                            class="music-entry-cards"
+                            align=FlexAlign::Center
+                            justify=FlexJustify::Center
+                        >
+                            <Grid class="music-entry-cards-grid" cols=3>
+                                {entries
+                                    .into_iter()
+                                    .map(|result| {
+                                        result
+                                            .map(|entry| {
+                                                view! {
+                                                    <GridItem>
+                                                        <MusicEntryCard entry />
+                                                    </GridItem>
+                                                }
+                                            })
+                                    })
+                                    .collect_view()}
+                            </Grid>
+                        </Flex>
                     </ErrorBoundary>
                 }
             })}

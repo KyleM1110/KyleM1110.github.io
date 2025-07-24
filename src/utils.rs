@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Context};
+use anyhow::Context;
 use leptos::{prelude::window, server::LocalResource};
 use reqwest::Response;
 use serde::de::DeserializeOwned;
