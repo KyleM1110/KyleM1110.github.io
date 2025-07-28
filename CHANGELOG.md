@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/KyleM1110/KyleM1110.github.io/compare/v0.2.0...v0.3.0) (2025-07-28)
+
+
+### Features
+
+* added music and partial contact page ([eb7e3ce](https://github.com/KyleM1110/KyleM1110.github.io/commit/eb7e3ce98511c2723ebe493a6d7597d0237e2d1c))
+
 ## [0.2.0](https://github.com/KyleM1110/KyleM1110.github.io/compare/v0.1.0...v0.2.0) (2025-07-23)
 
 
