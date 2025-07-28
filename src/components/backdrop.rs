@@ -5,7 +5,7 @@ use thaw::*;
 fn BackdropLight() -> impl IntoView {
     view! {
         <svg
-            style="position: absolute; opacity: 0.6;"
+            style="position: absolute; opacity: 0.6; width: 100vw; height: 100vh;"
             viewBox="0 0 800 600"
             xmlns="http://www.w3.org/2000/svg"
             class="absolute w-full h-full z-[-1] pointer-events-none"
@@ -45,7 +45,7 @@ fn BackdropDark() -> impl IntoView {
             viewBox="0 0 800 600"
             xmlns="http://www.w3.org/2000/svg"
             class="absolute w-full h-full z-[-1] pointer-events-none"
-            style="position: absolute; opacity: 0.6;"
+            style="position: absolute; opacity: 0.6; width: 100vw; height: 100vh;"
             style:background-color="transparent"
         >
             <defs>
