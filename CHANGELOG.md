@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/KyleM1110/KyleM1110.github.io/compare/v0.3.0...v0.3.1) (2025-07-28)
+
+
+### Bug Fixes
+
+* backdrop fits full height on mobile ([ec85445](https://github.com/KyleM1110/KyleM1110.github.io/commit/ec85445e4ae1a8101d467dfd7584f3e98e28d6c3))
+
 ## [0.3.0](https://github.com/KyleM1110/KyleM1110.github.io/compare/v0.2.0...v0.3.0) (2025-07-28)
 
 
