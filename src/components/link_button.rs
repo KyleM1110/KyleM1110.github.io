@@ -33,7 +33,7 @@ pub fn LinkButton(
     #[prop(optional, into)]
     loading: Signal<bool>,
     #[prop(optional)] comp_ref: ComponentRef<ButtonRef>,
-    #[prop(optional, into)] href: &'static str,
+    #[prop(optional, into)] href: Signal<String>,
     children: Children,
 ) -> impl IntoView {
     let navigate = use_navigate();
@@ -51,8 +51,8 @@ pub fn LinkButton(
             loading
             comp_ref
             on_click=move |_| {
-                if !href.is_empty() {
-                    navigate(href, Default::default())
+                if !href().is_empty() {
+                    navigate(&href(), Default::default())
                 }
             }
         >

@@ -3,7 +3,7 @@ use leptos::prelude::*;
 use serde::Deserialize;
 use thaw::*;
 
-use crate::{errors::LocalResourceError, pages::ServerError, utils};
+use crate::{components::LinkButton, errors::LocalResourceError, pages::ServerError, utils};
 
 const MANIFEST_URL: &str = "/data/manifest.json";
 #[derive(Deserialize, Clone, Default, Debug)]
@@ -21,12 +21,62 @@ struct MusicEntry {
 }
 
 #[component]
-fn MusicEntryCard(entry: MusicEntry) -> impl IntoView {
-    view! { {entry.title} }
+fn MusicEntryCard(entry: MusicEntry, theme: RwSignal<Theme>) -> impl IntoView {
+    view! {
+        <Flex
+            class="music-entry-card"
+            style="border-radius: 25px;"
+            vertical=true
+            style:background-color=move || { theme.get().color.color_neutral_background_4 }
+        >
+            <Flex class="music-entry-card-header" style="padding: 20px;" vertical=true>
+                <Text tag=TextTag::H1>
+                    <strong>{entry.title}</strong>
+                </Text>
+                <Caption1>{entry.description}</Caption1>
+                <RatingDisplay class="music-entry-rating" value=entry.jwpepper_stars />
+            </Flex>
+            <Divider />
+            <Flex
+                class="music-entry-card-preview-container"
+                style="padding: 20px;"
+                vertical=true
+                align=FlexAlign::Center
+                justify=FlexJustify::Center
+            >
+                <iframe
+                    class="music-entry-card-preview"
+                    width="280"
+                    height="158"
+                    src=entry.preview_url
+                    title="YouTube video player"
+                    style:border="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen
+                ></iframe>
+            </Flex>
+            <Divider />
+            <Flex class="music-entry-card-footer-container" style="padding: 20px;" vertical=true>
+                <Flex
+                    class="music-entry-card-footer"
+                    justify=FlexJustify::SpaceBetween
+                    align=FlexAlign::Center
+                >
+                    <Caption1>
+                        {format!("Last synced: {}", utils::get_local_timestamp(entry.last_synced))}
+                    </Caption1>
+                    <LinkButton shape=ButtonShape::Rounded href=entry.jwpepper_url>
+                        "More Details"
+                    </LinkButton>
+                </Flex>
+            </Flex>
+        </Flex>
+    }
 }
 
 #[component]
-pub fn Music() -> impl IntoView {
+pub fn Music(#[prop(into)] theme: RwSignal<Theme>) -> impl IntoView {
     // TODO: potentially make this into a OnceResource
     let manifest_resource = utils::fetch_local_resource::<DataManifest>(MANIFEST_URL.to_string());
     // TODO: this is very hacky, but it seems like this is the only way to store a vector of resources outside the view
@@ -64,12 +114,12 @@ pub fn Music() -> impl IntoView {
                     }>
                         {manifest.map(|_| ())}
                         <Flex
-                            style="height: 100%; z-index: 1;"
-                            class="music-entry-cards"
+                            style="height: 100%;"
+                            class="music-entry-cards-container"
                             align=FlexAlign::Center
                             justify=FlexJustify::Center
                         >
-                            <Grid attr:style="z-index: 1;" class="music-entry-cards-grid" cols=3>
+                            <Grid class="music-entry-cards-grid" x_gap=20 y_gap=20 cols=2>
                                 {entries
                                     .into_iter()
                                     .map(|result| {
@@ -77,7 +127,7 @@ pub fn Music() -> impl IntoView {
                                             .map(|entry| {
                                                 view! {
                                                     <GridItem>
-                                                        <MusicEntryCard entry />
+                                                        <MusicEntryCard entry theme />
                                                     </GridItem>
                                                 }
                                             })

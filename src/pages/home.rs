@@ -10,7 +10,7 @@ pub fn Home() -> impl IntoView {
     view! {
         <Flex justify=FlexJustify::End>
             <Image
-                attr:style="position: absolute; z-index: 0; padding-right: 5%; opacity: 1;"
+                attr:style="position: absolute; padding-right: 5%; opacity: 1;"
                 shape=ImageShape::Rounded
                 src="/images/kyle.png"
                 height="110%"
@@ -21,7 +21,7 @@ pub fn Home() -> impl IntoView {
             class="home-page"
             justify=FlexJustify::SpaceBetween
         >
-            <Flex class="introduction" style="z-index: 1; width: 40%;" vertical=true>
+            <Flex class="introduction" style="width: 40%;" vertical=true>
                 <Text style="font-size: 5rem; line-height: 5.5rem;" tag=TextTag::H1>
                     <strong>"Hello, I'm Kyle."</strong>
                 </Text>

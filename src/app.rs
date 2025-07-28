@@ -34,15 +34,32 @@ fn NavBar(theme: RwSignal<Theme>) -> impl IntoView {
         }
     });
     view! {
-        <Flex class="nav-bar" style="height: 100%; padding-left: 13px;" style:background-color=move || theme.get().color.color_neutral_background_3 align=FlexAlign::Center justify=FlexJustify::SpaceBetween>
-            <Text style="font-size: 1.5rem;" tag=TextTag::H1>
-                <b>"Kyle Manuel"</b>
-            </Text>
+        <Flex
+            class="nav-bar"
+            style="height: 100%;"
+            style:background-color=move || theme.get().color.color_neutral_background_3
+            align=FlexAlign::Center
+            justify=FlexJustify::SpaceBetween
+        >
+            <NavButton href="/home">
+                <Text style="font-size: 1.5rem;" tag=TextTag::H1>
+                    <b>"Kyle Manuel"</b>
+                </Text>
+            </NavButton>
             <Flex gap=FlexGap::Small>
                 <Button
                     class="toggle-theme-button"
                     icon
-                    on_click=move |_| theme.set(if theme.get().name == Theme::light().name { Theme::dark() } else { Theme::light() })
+                    on_click=move |_| {
+                        theme
+                            .set(
+                                if theme.get().name == Theme::light().name {
+                                    Theme::dark()
+                                } else {
+                                    Theme::light()
+                                },
+                            )
+                    }
                 >
                     {text}
                 </Button>
@@ -51,7 +68,7 @@ fn NavBar(theme: RwSignal<Theme>) -> impl IntoView {
                 <NavButton href="/contact">"Contact"</NavButton>
             </Flex>
         </Flex>
-        <Divider />
+        <Divider style:z-index="1" />
     }
 }
 
@@ -82,50 +99,66 @@ pub fn App() -> impl IntoView {
     let dark_preferred = use_preferred_dark();
     let dark = RwSignal::new(false);
     let theme = RwSignal::new(Theme::light());
+
     // TODO: should work on making this into a Memo. According to Leptos docs this is suboptimal use of an Effect
     Effect::new(move |_| {
         let dark_preferred = dark_preferred.get();
         if dark_preferred {
             theme.set(Theme::dark());
         }
+        // Make background transparent for backdrop
         dark.set(dark_preferred);
     });
     view! {
         <Router>
             <ConfigProvider theme>
                 <LoadingBarProvider>
-                    <Layout
-                        class="root"
-                        content_style="height: 100vh;"
-                        position=LayoutPosition::Absolute
-                    >
-                        <LayoutHeader>
-                            <nav style="height: 10vh; z-index: 1;">
-                                <NavBar theme />
-                            </nav>
-                        </LayoutHeader>
+                    <Layout position=LayoutPosition::Absolute>
+                        <Backdrop theme />
                         <Layout
-                            attr:style="top: 10vh; height: 90vh;"
+                            class="root"
+                            style:background-color="transparent"
+                            content_style="height: 100vh;"
                             position=LayoutPosition::Absolute
                         >
-                            <Backdrop theme />
-                            <Flex
-                                gap=FlexGap::Size(0)
-                                style="min-height: 90vh;"
-                                vertical=true
-                                justify=FlexJustify::SpaceBetween
+                            <LayoutHeader>
+                                <nav style="height: 10vh;">
+                                    <NavBar theme />
+                                </nav>
+                            </LayoutHeader>
+                            <Layout
+                                attr:style="top: 10vh; height: 90vh;"
+                                position=LayoutPosition::Absolute
                             >
-                                <main style="height: 80vh;">
-                                    <Routes fallback=NotFound>
-                                        <Route path=path!("/") view=Home />
-                                        <Route path=path!("/home") view=Home />
-                                        <Route path=path!("/music") view=Music />
-                                    </Routes>
-                                </main>
-                                <footer style="height: 10vh; width: 100%; z-index: 1;">
-                                    <Footer theme />
-                                </footer>
-                            </Flex>
+                                <Flex
+                                    gap=FlexGap::Size(0)
+                                    style="min-height: 90vh;"
+                                    vertical=true
+                                    justify=FlexJustify::SpaceBetween
+                                >
+                                    <main style="height: 80vh;">
+                                        <Layout
+                                            position=LayoutPosition::Absolute
+                                            attr:style="background-color: transparent; height: 80vh;"
+                                        >
+                                            <Routes fallback=NotFound>
+                                                <Route path=path!("/") view=Home />
+                                                <Route path=path!("/home") view=Home />
+                                                <Route
+                                                    path=path!("/music")
+                                                    view=move || {
+                                                        view! { <Music theme /> }
+                                                    }
+                                                />
+                                                <Route path=path!("/contact") view=Contact />
+                                            </Routes>
+                                        </Layout>
+                                    </main>
+                                    <footer style="height: 10vh; width: 100%; z-index: 1;">
+                                        <Footer theme />
+                                    </footer>
+                                </Flex>
+                            </Layout>
                         </Layout>
                     </Layout>
                 </LoadingBarProvider>

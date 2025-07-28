@@ -1,6 +1,8 @@
-use anyhow::Context;
+use anyhow::{bail, Context};
+use chrono::{DateTime, Utc};
+use gloo_net::http::{Request, Response};
+use js_sys::{wasm_bindgen::JsValue, Date};
 use leptos::{prelude::window, server::LocalResource};
-use reqwest::Response;
 use serde::de::DeserializeOwned;
 
 use crate::errors::LocalResourceError;
@@ -9,11 +11,16 @@ async fn get_local_response(url: &str) -> anyhow::Result<Response> {
     let url = url.trim().trim_start_matches('/');
     let url = format!("{}/{url}", window().location().origin().unwrap());
     log::debug!("Fetching local resource: '{url}'");
-    let response = reqwest::get(&url)
-        .await
-        .context(format!("Failed to fetch local resource: '{}'", &url))?
-        .error_for_status()
-        .context("Request to retrieve local resource did not have a successful response")?;
+    let response = Request::get(&url).send().await.context(format!(
+        "Failed to send request to local resource: '{}'",
+        &url
+    ))?;
+    if !response.ok() {
+        bail!(
+            "Response to fetch to local resource '{}' was not successful",
+            url
+        );
+    }
     Ok(response)
 }
 pub async fn fetch_local_raw(url: &str) -> anyhow::Result<String> {
@@ -21,7 +28,7 @@ pub async fn fetch_local_raw(url: &str) -> anyhow::Result<String> {
     let body = response
         .text()
         .await
-        .context("Failed to read response body")?;
+        .context("Failed to read response as a string")?;
     Ok(body)
 }
 
@@ -44,4 +51,11 @@ where
             data
         }
     })
+}
+
+pub fn get_local_timestamp(timestamp: DateTime<Utc>) -> String {
+    let js_date = Date::new(&timestamp.to_string().into());
+    js_date
+        .to_locale_string("default", &JsValue::undefined())
+        .into()
 }
